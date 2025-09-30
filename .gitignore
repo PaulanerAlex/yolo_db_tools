@@ -1,0 +1,8 @@
+dataset/*
+!dataset/.gitkeep
+runs/*
+!runs/.gitkeep
+img/*
+!img/.gitkeep
+env/
+*__pycache__/
