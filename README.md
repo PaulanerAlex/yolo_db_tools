@@ -17,6 +17,7 @@ This project provides tools to:
 - **Multiple Bounding Box Types**:
   - Oriented Bounding Box (4 points) - for rotated objects
   - Rectangle (4 points) - for axis-aligned objects
+- **Multiple Objects per Image**: Support for annotating multiple objects in a single image
 - **Dataset Management**: Automatic train/validation split with proper folder structure
 - **YAML Configuration**: Automatic generation of YOLO-compatible dataset configuration
 - **Model Training**: Simple interface for training YOLO models with your custom dataset
@@ -73,8 +74,11 @@ python create_ultralytics_dataset.py
 3. **Bounding Box Type**:
    - `1`: Oriented Bounding Box (4 points) - for rotated objects
    - `2`: Rectangle (4 points) - for axis-aligned objects
-4. **Training Images**: Specify number of images to annotate for training
-5. **Validation Images**: Specify number of images to annotate for validation
+4. **Multiple Objects**: Choose whether to allow multiple bounding boxes per image
+   - `1`: Single bounding box per image (default)
+   - `2`: Multiple bounding boxes per image
+5. **Training Images**: Specify number of images to annotate for training
+6. **Validation Images**: Specify number of images to annotate for validation
 
 **Annotation Process:**
 
@@ -82,6 +86,12 @@ python create_ultralytics_dataset.py
 - Interactive annotation interface opens for each image
 - Click to define bounding box corners
 - For oriented bounding boxes: rotation is enabled
+- **Multiple bounding boxes mode**:
+  - Use "Weitere Box" button to add additional bounding boxes to the same image
+  - Use "Rückgängig" button to remove the last bounding box
+  - Use "Fertig" button when done with all objects in the image
+- **Single bounding box mode**:
+  - Use "Fertig" button when done with the object
 - Options after each annotation:
   - Continue to next image
   - `s` - Delete current annotation and retry
@@ -179,6 +189,11 @@ yolo_db_tools/
 - **Annotation Accuracy**: Take time to accurately annotate bounding boxes
 - **Data Balance**: Ensure good representation of your target objects
 - **Train/Val Split**: Typically 80/20 or 70/30 split is recommended
+- **Multiple Objects**: When using multiple bounding boxes per image:
+  - Annotate all instances of the target object in each image
+  - Use consistent annotation quality across all objects
+  - Consider object occlusion and overlapping cases
+  - The "Weitere Box" button allows adding more objects to the same image
 
 ### Training
 
@@ -193,6 +208,24 @@ yolo_db_tools/
 - **GPU**: CUDA-compatible GPU recommended for training
 - **Memory**: At least 8GB RAM, 16GB+ recommended for larger datasets
 - **Storage**: Ensure adequate space for datasets and training outputs
+
+### Annotation Interface
+
+**Multiple Bounding Box Mode:**
+
+- **Weitere Box** - Save current bounding box and start annotating another object in the same image
+- **Rückgängig** - Remove the last completed bounding box from the current image
+- **Fertig** - Finish annotation for this image (saves all bounding boxes)
+
+**Single Bounding Box Mode:**
+
+- **Fertig** - Finish annotation for this image
+
+**Navigation:**
+
+- **Mouse**: Click to place bounding box corners
+- **Scroll Wheel**: Rotate bounding box (when rotation is enabled)
+- **Drag**: Adjust bounding box after initial placement
 
 ## Troubleshooting
 

@@ -28,7 +28,7 @@ def create_yaml_structure(project_name, object_name="object"):
     }
     return yml_content
 
-def annotate_img(image_path, validating=False, bb_type=1):
+def annotate_img(image_path, validating=False, bb_type=1, multiple=False):
     """
     Annotates image using bb_picker and saves image and txt
     in the corresponding folders
@@ -37,18 +37,38 @@ def annotate_img(image_path, validating=False, bb_type=1):
     purpose = "train" if not validating else "val"
 
     # get bounding box coordinates by user input
-    [(x1, y1), (x2, y2), (x3, y3), (x4, y4)], width, height, angle = bb_picker(image_path, True, rotation_enabled=(bb_type==0))
+    if multiple:
+        annotations = bb_picker(image_path, True, rotation_enabled=(bb_type==0), multiple=True)
+        if not annotations:
+            print("No annotations created for this image.")
+            return
+    else:
+        single_annotation = bb_picker(image_path, True, rotation_enabled=(bb_type==0))
+        annotations = [single_annotation]  # Convert to list format for consistent processing
     
     shutil.copy(image_path, f"dataset/{project_name}/images/{purpose}/" + os.path.basename(image_path))
 
     # Save the coordinates to a text file
-    with open(f"dataset/{project_name}/labels/{purpose}/{os.path.basename(image_path).replace('.jpg', '.txt').replace(".png", ".txt")}", 'w') as f:
-        if (bb_type == 1):
-            f.write(f"0 {x1} {y1} {x2} {y2} {x3} {y3} {x4} {y4}")
-        elif (bb_type == 2): # FIXME: check if this is correct
-            f.write(f"0 {(x1 + x3) / 2} {(y1 + y3) / 2} {width} {height} {angle}")
+    label_path = f"dataset/{project_name}/labels/{purpose}/{os.path.basename(image_path).replace('.jpg', '.txt').replace('.png', '.txt').replace('.jpeg', '.txt')}"
+    with open(label_path, 'w') as f:
+        for i, annotation in enumerate(annotations):
+            if multiple:
+                # annotation is (corners, width, height, angle)
+                [(x1, y1), (x2, y2), (x3, y3), (x4, y4)], width, height, angle = annotation
+            else:
+                # annotation is (corners, width, height, angle) - same format
+                [(x1, y1), (x2, y2), (x3, y3), (x4, y4)], width, height, angle = annotation
+            
+            if bb_type == 1:  # Oriented Bounding Box
+                line = f"0 {x1} {y1} {x2} {y2} {x3} {y3} {x4} {y4}"
+            elif bb_type == 2:  # Rectangle format
+                line = f"0 {(x1 + x3) / 2} {(y1 + y3) / 2} {width} {height} {angle}"
+            
+            if i > 0:  # Add newline for multiple annotations
+                f.write("\n")
+            f.write(line)
 
-def dataset_tool(project_name, object_name="object", bb_type=1):
+def dataset_tool(project_name, object_name="object", bb_type=1, multiple=False):
     """
     guide for dataset creation for the user
     """
@@ -76,7 +96,7 @@ def dataset_tool(project_name, object_name="object", bb_type=1):
             continue
         while image_name in annotated_imgs:
             image_name = random.choice(os.listdir("img"))
-        annotate_img(f"img/{image_name}", bb_type=bb_type) # TODO: add no rotating mode
+        annotate_img(f"img/{image_name}", bb_type=bb_type, multiple=multiple)
         annotated_imgs.append(image_name)
         print("continue? (s to delete the last image from dataset, n or no to stop)")
         cont = input('>>> ')
@@ -85,8 +105,10 @@ def dataset_tool(project_name, object_name="object", bb_type=1):
 
         if cont.lower() == 's':
             # remove the last image from the dataset
-            os.remove(image_path)
-            os.remove(label_path)
+            if (os.path.exists(image_path)):
+                os.remove(image_path)
+            if (os.path.exists(label_path)):
+                os.remove(label_path)
             rem_count += 1
             print("Last image removed from dataset.")
         i += 1
@@ -108,16 +130,18 @@ def dataset_tool(project_name, object_name="object", bb_type=1):
             continue
         while image_name in annotated_imgs:
             image_name = random.choice(os.listdir("img"))
-        annotate_img(f"img/{image_name}", validating=True, bb_type=bb_type)
+        annotate_img(f"img/{image_name}", validating=True, bb_type=bb_type, multiple=multiple)
         annotated_imgs.append(image_name)
         print("continue? (s to delete the last image from dataset, n or no to stop)")
         cont = input('>>> ')
         image_path = f"dataset/{project_name}/images/val/" + os.path.basename(image_name)
-        label_path = f"dataset/{project_name}/labels/val/" + os.path.basename(image_name).replace('.jpg', '.txt').replace(".png", ".txt")
+        label_path = f"dataset/{project_name}/labels/val/" + os.path.basename(image_name).replace('.jpg', '.txt').replace(".png", ".txt").replace(".png", ".txt").replace("jpeg", "txt")
         if cont.lower() == 's':
             # remove the last image from the dataset
-            os.remove(image_path)
-            os.remove(label_path)
+            if (os.path.exists(image_path)):
+                os.remove(image_path)
+            if (os.path.exists(label_path)):
+                os.remove(label_path)
             rem_count += 1
             print("Last image removed from dataset.")
         i += 1
@@ -171,4 +195,15 @@ if __name__ == "__main__":
 
     print(f"Using bounding box type: {bb_types[bb_type - 1]}")
 
-    dataset_tool(project_name, object_name=object_name, bb_type=bb_type)
+    print("Do you want to allow multiple bounding boxes per image?")
+    print("1: Single bounding box per image")
+    print("2: Multiple bounding boxes per image")
+    multiple_choice = input("Enter choice (default: 1): ").strip()
+    if multiple_choice == "2":
+        multiple = True
+        print("Multiple bounding boxes per image enabled.")
+    else:
+        multiple = False
+        print("Single bounding box per image mode.")
+
+    dataset_tool(project_name, object_name=object_name, bb_type=bb_type, multiple=multiple)

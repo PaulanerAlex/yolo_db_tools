@@ -51,3 +51,4 @@ tzdata==2025.2
 ultralytics==8.3.110
 ultralytics-thop==2.0.14
 urllib3==2.4.0
+PyQt5==5.15.10
