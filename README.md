@@ -63,7 +63,7 @@ Place your images in the `img/` directory. Supported formats:
 Run the dataset creation tool:
 
 ```bash
-python create_ultralytics_dataset.py
+python ultralytics_dataset_creator.py
 ```
 
 **Interactive Setup:**

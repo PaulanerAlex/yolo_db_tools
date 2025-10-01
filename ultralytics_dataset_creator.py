@@ -62,7 +62,7 @@ def annotate_img(image_path, validating=False, bb_type=1, multiple=False):
             if bb_type == 1:  # Oriented Bounding Box
                 line = f"0 {x1} {y1} {x2} {y2} {x3} {y3} {x4} {y4}"
             elif bb_type == 2:  # Rectangle format
-                line = f"0 {(x1 + x3) / 2} {(y1 + y3) / 2} {width} {height} {angle}"
+                line = f"0 {(x1 + x3) / 2} {(y1 + y3) / 2} {width} {height}"
             
             if i > 0:  # Add newline for multiple annotations
                 f.write("\n")

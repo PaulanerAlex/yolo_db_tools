@@ -6,3 +6,4 @@ img/*
 !img/.gitkeep
 env/
 *__pycache__/
+yolo11*.pt
