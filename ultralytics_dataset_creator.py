@@ -94,7 +94,7 @@ def dataset_tool(project_name, object_name="object", bb_type=1, multiple=False):
         if image_name.split('.')[-1].lower() not in ['jpg', 'jpeg', 'png']:
             print(f"Skipping non-image file: {image_name} (if infinite loop occurs, please lower the number of images to annotate)")
             continue
-        while image_name in annotated_imgs:
+        while image_name in annotated_imgs and image_name.split('.')[-1].lower() in ['jpg', 'jpeg', 'png']:
             image_name = random.choice(os.listdir("img"))
         annotate_img(f"img/{image_name}", bb_type=bb_type, multiple=multiple)
         annotated_imgs.append(image_name)
@@ -128,14 +128,14 @@ def dataset_tool(project_name, object_name="object", bb_type=1, multiple=False):
         if image_name.split('.')[-1].lower() not in ['jpg', 'jpeg', 'png']:
             print(f"Skipping non-image file: {image_name} (if infinite loop occurs, please lower the number of images to annotate)")
             continue
-        while image_name in annotated_imgs:
+        while image_name in annotated_imgs and image_name.split('.')[-1].lower() in ['jpg', 'jpeg', 'png']:
             image_name = random.choice(os.listdir("img"))
         annotate_img(f"img/{image_name}", validating=True, bb_type=bb_type, multiple=multiple)
         annotated_imgs.append(image_name)
         print("continue? (s to delete the last image from dataset, n or no to stop)")
         cont = input('>>> ')
         image_path = f"dataset/{project_name}/images/val/" + os.path.basename(image_name)
-        label_path = f"dataset/{project_name}/labels/val/" + os.path.basename(image_name).replace('.jpg', '.txt').replace(".png", ".txt").replace(".png", ".txt").replace("jpeg", "txt")
+        label_path = f"dataset/{project_name}/labels/val/" + os.path.basename(image_name).replace('.jpg', '.txt').replace(".png", ".txt").replace("jpeg", "txt")
         if cont.lower() == 's':
             # remove the last image from the dataset
             if (os.path.exists(image_path)):
