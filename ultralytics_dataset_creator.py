@@ -90,12 +90,11 @@ def dataset_tool(project_name, object_name="object", bb_type=1, multiple=False):
     i = 0
     while i < num_train_images:
         print(f"Annotating training image {i + 1} of {num_train_images}...")
-        image_name = random.choice(os.listdir("img"))
+        while image_name in annotated_imgs:
+            image_name = random.choice(os.listdir("img"))
         if image_name.split('.')[-1].lower() not in ['jpg', 'jpeg', 'png']:
             print(f"Skipping non-image file: {image_name} (if infinite loop occurs, please lower the number of images to annotate)")
             continue
-        while image_name in annotated_imgs and image_name.split('.')[-1].lower() in ['jpg', 'jpeg', 'png']:
-            image_name = random.choice(os.listdir("img"))
         annotate_img(f"img/{image_name}", bb_type=bb_type, multiple=multiple)
         annotated_imgs.append(image_name)
         print("continue? (s to delete the last image from dataset, n or no to stop)")
@@ -124,12 +123,11 @@ def dataset_tool(project_name, object_name="object", bb_type=1, multiple=False):
     i = 0
     while i < num_val_images:
         print(f"Annotating validation image {i + 1} of {num_val_images}...")
-        image_name = random.choice(os.listdir("img"))
+        while image_name in annotated_imgs:
+            image_name = random.choice(os.listdir("img"))
         if image_name.split('.')[-1].lower() not in ['jpg', 'jpeg', 'png']:
             print(f"Skipping non-image file: {image_name} (if infinite loop occurs, please lower the number of images to annotate)")
             continue
-        while image_name in annotated_imgs and image_name.split('.')[-1].lower() in ['jpg', 'jpeg', 'png']:
-            image_name = random.choice(os.listdir("img"))
         annotate_img(f"img/{image_name}", validating=True, bb_type=bb_type, multiple=multiple)
         annotated_imgs.append(image_name)
         print("continue? (s to delete the last image from dataset, n or no to stop)")
