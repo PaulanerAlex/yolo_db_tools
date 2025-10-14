@@ -90,6 +90,7 @@ def dataset_tool(project_name, object_name="object", bb_type=1, multiple=False):
     i = 0
     while i < num_train_images:
         print(f"Annotating training image {i + 1} of {num_train_images}...")
+        image_name = random.choice(os.listdir("img"))
         while image_name in annotated_imgs:
             image_name = random.choice(os.listdir("img"))
         if image_name.split('.')[-1].lower() not in ['jpg', 'jpeg', 'png']:
@@ -123,6 +124,7 @@ def dataset_tool(project_name, object_name="object", bb_type=1, multiple=False):
     i = 0
     while i < num_val_images:
         print(f"Annotating validation image {i + 1} of {num_val_images}...")
+        image_name = random.choice(os.listdir("img"))
         while image_name in annotated_imgs:
             image_name = random.choice(os.listdir("img"))
         if image_name.split('.')[-1].lower() not in ['jpg', 'jpeg', 'png']:
